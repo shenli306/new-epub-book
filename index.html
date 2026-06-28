@@ -149,6 +149,16 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
+        .source-panel .source-panel-bg,
+        .source-panel .source-panel-content,
+        .source-panel .source-panel-content * {
+            pointer-events: none;
+        }
+        .source-panel.active .source-panel-bg,
+        .source-panel.active .source-panel-content,
+        .source-panel.active .source-panel-content * {
+            pointer-events: auto;
+        }
         .source-panel.active {
             opacity: 1;
             pointer-events: auto;
@@ -721,6 +731,12 @@
         island.addEventListener('click', (e) => {
             // 拦截滑块和控制元素
             if (e.target.closest('.slider-control') || e.target.tagName === 'INPUT') {
+                return;
+            }
+            
+            // 如果是长按触发的展开，忽略这次点击，防止立即折叠
+            if (hasTriggeredLongPress) {
+                hasTriggeredLongPress = false;
                 return;
             }
             
