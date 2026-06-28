@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/search",
+      "destination": "/api/search.js"
+    },
+    {
+      "source": "/api/chapters",
+      "destination": "/api/chapters.js"
+    },
+    {
+      "source": "/api/content",
+      "destination": "/api/content.js"
+    },
+    {
+      "source": "/api/sources",
+      "destination": "/api/sources.js"
+    },
+    {
+      "source": "/api/test-source",
+      "destination": "/api/test-source.js"
+    },
+    {
+      "source": "/proxy",
+      "destination": "/api/proxy.js"
+    }
+  ]
+}
