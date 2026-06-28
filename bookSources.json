@@ -1,0 +1,29 @@
+[
+  {
+    "id": "src_default_1",
+    "bookSourceUrl": "https://www.huanmengacg.com",
+    "bookSourceName": "幻梦轻小说",
+    "bookSourceGroup": "轻小说",
+    "enabled": true,
+    "searchUrl": "https://www.huanmengacg.com/index.php/book/search?q={key}",
+    "ruleSearch": {
+      "method": "GET",
+      "bookList": ".common-list",
+      "bookName": "dl.common-info dt",
+      "bookAuthor": "span.pipe-z",
+      "bookUrl": "a.details-part@href",
+      "bookCover": "img@data-original",
+      "bookStatus": "span.pipe-s2",
+      "bookCategory": "span.pipe-s1",
+      "bookIntro": "dd.book-profile"
+    },
+    "ruleChapter": {
+      "chapterList": "ul#chapterlist li a",
+      "chapterName": "text",
+      "chapterUrl": "@href"
+    },
+    "ruleContent": {
+      "content": "div#BookText"
+    }
+  }
+]
