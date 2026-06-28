@@ -1351,7 +1351,7 @@
         // 真实搜索模块
         // ==============================================
 
-        let isSearching = false;
+        let isRealSearching = false;
         let currentSearchResults = [];
         let currentBookSource = null;
         let currentBookUrl = null;
@@ -1381,8 +1381,8 @@
 
         // 执行真实搜索
         async function performRealSearch(keyword) {
-            if (isSearching) return;
-            isSearching = true;
+            if (isRealSearching) return;
+            isRealSearching = true;
 
             // 显示搜索结果面板
             document.getElementById('search-results-panel').classList.add('active');
@@ -1436,7 +1436,7 @@
 
             // 隐藏加载状态
             document.getElementById('search-loading').classList.add('hidden');
-            isSearching = false;
+            isRealSearching = false;
 
             if (allResults.length === 0) {
                 showSearchEmpty();
@@ -1476,7 +1476,7 @@
             document.getElementById('search-error').classList.remove('hidden');
             document.getElementById('search-error-msg').textContent = message;
             document.getElementById('search-result-count').textContent = '搜索失败';
-            isSearching = false;
+            isRealSearching = false;
         }
 
         function closeSearchResults() {
