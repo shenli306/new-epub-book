@@ -1,0 +1,56 @@
+[
+  {
+    "id": "src_default_1",
+    "bookSourceUrl": "https://www.huanmengacg.com",
+    "bookSourceName": "幻梦轻小说",
+    "bookSourceGroup": "轻小说",
+    "enabled": true,
+    "searchUrl": "https://www.huanmengacg.com/index.php/book/search?key={key}",
+    "ruleSearch": {
+      "method": "GET",
+      "bookList": "dl",
+      "bookName": "a.bigpic-book-name",
+      "bookAuthor": "p:has(i.fa-user-circle-o)",
+      "bookUrl": "a.bigpic-book-name@href",
+      "bookCover": "a img@data-original",
+      "bookStatus": "",
+      "bookCategory": "",
+      "bookIntro": ""
+    },
+    "ruleChapter": {
+      "chapterList": "ul#chapterlist li a",
+      "chapterName": "text",
+      "chapterUrl": "@href"
+    },
+    "ruleContent": {
+      "content": "div#BookText"
+    }
+  },
+  {
+    "id": "src_fanqie_1",
+    "bookSourceUrl": "https://www.souhh.com",
+    "bookSourceName": "番茄小说",
+    "bookSourceGroup": "综合",
+    "enabled": true,
+    "searchUrl": "https://www.souhh.com/api/search?key={key}&tab_type=3&offset=0",
+    "ruleSearch": {
+      "method": "GET",
+      "bookList": "$.data[*]",
+      "bookName": "$.book_name",
+      "bookAuthor": "$.author",
+      "bookUrl": "https://www.souhh.com/api/chapter?book_id={$.book_id}&book_type={$.tab}",
+      "bookCover": "$.thumb_url",
+      "bookStatus": "",
+      "bookCategory": "",
+      "bookIntro": "$.abstract"
+    },
+    "ruleChapter": {
+      "chapterList": "$.data.list[*]",
+      "chapterName": "$.title",
+      "chapterUrl": "https://www.souhh.com/api/content?item_id={$.item_id}"
+    },
+    "ruleContent": {
+      "content": "$.data.content"
+    }
+  }
+]

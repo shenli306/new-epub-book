@@ -1,0 +1,23 @@
+{
+  "name": "epub-liquid-glass-island",
+  "version": "1.0.0",
+  "description": "EPUB 液态玻璃灵动岛 - 小说书源管理与阅读平台",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "novel",
+    "book-source",
+    "epub",
+    "reader"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}
