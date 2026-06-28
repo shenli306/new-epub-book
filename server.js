@@ -249,36 +249,78 @@ app.post('/api/search', async (req, res) => {
         const ruleSearch = bookSource.ruleSearch || {};
         const books = [];
 
-        // 根据配置的选择器提取书籍
-        let bookPattern;
-        if (ruleSearch.bookName && ruleSearch.bookName.includes('bigpic-book-name')) {
-            // 幻梦轻小说：直接匹配 bigpic-book-name 类名的链接
-            bookPattern = /<a[^>]*href=["']([^"']+)["'][^>]*class=["'][^"']*bigpic-book-name[^"']*["'][^>]*>([^<]+)<\/a>/gi;
+        // 检查是否是 JSON API（通过 bookList 配置判断）
+        const isJsonApi = ruleSearch.bookList && ruleSearch.bookList.startsWith('$.');
+
+        if (isJsonApi) {
+            // JSON API 解析（番茄小说等）
+            let jsonData;
+            try {
+                jsonData = typeof html === 'string' ? JSON.parse(html) : html;
+            } catch (e) {
+                // 如果不是 JSON，尝试按 HTML 处理
+                jsonData = null;
+            }
+
+            if (jsonData && jsonData.data && Array.isArray(jsonData.data)) {
+                for (const item of jsonData.data) {
+                    const name = item.book_name || item.name || '';
+                    const author = item.author || '';
+                    const cover = item.thumb_url || item.coverUrl || '';
+                    const intro = item.abstract || item.intro || '';
+                    const bookId = item.book_id || item.bookId || '';
+                    const tab = item.tab || '';
+
+                    if (name) {
+                        // 构建书籍URL
+                        let bookUrl = ruleSearch.bookUrl || '';
+                        bookUrl = bookUrl.replace(/\{\$\.book_id\}/gi, bookId);
+                        bookUrl = bookUrl.replace(/\{\$\.tab\}/gi, tab);
+                        bookUrl = bookUrl.replace(/\{book_id\}/gi, bookId);
+                        bookUrl = bookUrl.replace(/\{tab\}/gi, tab);
+
+                        books.push({
+                            name: name,
+                            url: bookUrl,
+                            author: author,
+                            cover: cover,
+                            intro: intro
+                        });
+                    }
+                }
+            }
         } else {
-            // 通用模式：提取所有书籍相关链接
-            bookPattern = /<a[^>]+href=["']([^"']+)["'][^>]*>([^<]*(?:<[^>]+>[^<]*)*)<\/a>/gi;
-        }
+            // HTML 解析（幻梦轻小说等）
+            let bookPattern;
+            if (ruleSearch.bookName && ruleSearch.bookName.includes('bigpic-book-name')) {
+                // 幻梦轻小说：直接匹配 bigpic-book-name 类名的链接
+                bookPattern = /<a[^>]*href=["']([^"']+)["'][^>]*class=["'][^"']*bigpic-book-name[^"']*["'][^>]*>([^<]+)<\/a>/gi;
+            } else {
+                // 通用模式：提取所有书籍相关链接
+                bookPattern = /<a[^>]+href=["']([^"']+)["'][^>]*>([^<]*(?:<[^>]+>[^<]*)*)<\/a>/gi;
+            }
 
-        const allLinks = html.match(bookPattern) || [];
+            const allLinks = html.match(bookPattern) || [];
 
-        for (const link of allLinks) {
-            const hrefMatch = link.match(/href=["']([^"']+)["']/);
-            const textMatch = link.match(/>([^<]+)</);
+            for (const link of allLinks) {
+                const hrefMatch = link.match(/href=["']([^"']+)["']/);
+                const textMatch = link.match(/>([^<]+)</);
 
-            if (hrefMatch && textMatch) {
-                const url = hrefMatch[1];
-                const text = textMatch[1].replace(/<[^>]+>/g, '').trim();
+                if (hrefMatch && textMatch) {
+                    const url = hrefMatch[1];
+                    const text = textMatch[1].replace(/<[^>]+>/g, '').trim();
 
-                // 过滤书籍详情链接
-                if (text.length > 1 && text.length < 100 &&
-                    (url.includes('.html') || url.includes('/book/') || url.includes('/novel/') || url.includes('/info/'))) {
-                    books.push({
-                        name: text,
-                        url: url.startsWith('http') ? url : url,
-                        author: '',
-                        cover: '',
-                        intro: ''
-                    });
+                    // 过滤书籍详情链接
+                    if (text.length > 1 && text.length < 100 &&
+                        (url.includes('.html') || url.includes('/book/') || url.includes('/novel/') || url.includes('/info/'))) {
+                        books.push({
+                            name: text,
+                            url: url.startsWith('http') ? url : url,
+                            author: '',
+                            cover: '',
+                            intro: ''
+                        });
+                    }
                 }
             }
         }

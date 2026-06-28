@@ -25,5 +25,32 @@
     "ruleContent": {
       "content": "div#BookText"
     }
+  },
+  {
+    "id": "src_fanqie_1",
+    "bookSourceUrl": "https://www.souhh.com",
+    "bookSourceName": "番茄小说",
+    "bookSourceGroup": "综合",
+    "enabled": true,
+    "searchUrl": "https://www.souhh.com/api/search?key={key}&tab_type=3&offset=0",
+    "ruleSearch": {
+      "method": "GET",
+      "bookList": "$.data[*]",
+      "bookName": "$.book_name",
+      "bookAuthor": "$.author",
+      "bookUrl": "https://www.souhh.com/api/chapter?book_id={$.book_id}&book_type={$.tab}",
+      "bookCover": "$.thumb_url",
+      "bookStatus": "",
+      "bookCategory": "",
+      "bookIntro": "$.abstract"
+    },
+    "ruleChapter": {
+      "chapterList": "$.data.list[*]",
+      "chapterName": "$.title",
+      "chapterUrl": "https://www.souhh.com/api/content?item_id={$.item_id}"
+    },
+    "ruleContent": {
+      "content": "$.data.content"
+    }
   }
 ]
