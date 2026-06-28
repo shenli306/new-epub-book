@@ -1,0 +1,577 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>EPUB - 液态玻璃灵动岛</title>
+    <!-- 引入 Tailwind CSS 用于快速构建现代布局 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 注册现代 CSS 属性，使 CSS 变量能直接参与 transition 动画 */
+        @property --glow-hue {
+            syntax: '<number>';
+            inherits: true;
+            initial-value: 220;
+        }
+        @property --glow-depth {
+            syntax: '<number>';
+            inherits: true;
+            initial-value: 0.25;
+        }
+        @property --glow-size {
+            syntax: '<percentage>';
+            inherits: true;
+            initial-value: 50%;
+        }
+
+        /* 页面背景：深邃黑色加动态调节的中心双色渐变 */
+        body {
+            background-color: #000000;
+            background-image: 
+                radial-gradient(circle at 35% 45%, hsla(var(--glow-hue), 100%, 50%, var(--glow-depth)) 0%, transparent var(--glow-size)),
+                radial-gradient(circle at 65% 55%, hsla(calc(var(--glow-hue) + 110), 100%, 45%, var(--glow-depth)) 0%, transparent var(--glow-size));
+            background-attachment: fixed;
+            color: #ffffff;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* 清除移动端点击高亮蓝框 */
+            
+            /* 背景过渡动画：实现拉拽滑块时背景色彩与强度的液体流动感 */
+            transition: 
+                --glow-hue 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                --glow-depth 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                --glow-size 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 液体玻璃元素基础样式 */
+        .glass-element {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(25px) saturate(190%);
+            -webkit-backdrop-filter: blur(25px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.6),
+                inset 0 1px 1px rgba(255, 255, 255, 0.25),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.5);
+            pointer-events: auto;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 灵动岛的高级毛玻璃发光效果 */
+        .dynamic-island {
+            box-shadow: 
+                0 12px 45px rgba(0, 0, 0, 0.85),
+                0 0 25px rgba(0, 102, 255, 0.12),
+                inset 0 1px 2px rgba(255, 255, 255, 0.35);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 灵动岛呼吸灯动效 */
+        @keyframes liquid-pulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(0, 102, 255, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(255, 0, 128, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.45);
+            }
+        }
+        .island-pulse {
+            animation: liquid-pulse 4s infinite ease-in-out;
+        }
+
+        /* 搜索框发光高亮 */
+        .search-glass:focus-within {
+            border-color: rgba(0, 102, 255, 0.45);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 
+                0 15px 35px rgba(0, 102, 255, 0.2),
+                0 0 0 1px rgba(0, 102, 255, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.45);
+            transform: scale(1.015);
+        }
+
+        /* 极致现代的拟物化液态玻璃滑动条样式 */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.08);
+            height: 6px;
+            border-radius: 9999px;
+            outline: none;
+            transition: background 0.3s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 2px 4px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        input[type="range"]::-webkit-slider-thumb:active {
+            transform: scale(1.35);
+        }
+
+        /* 流光加载动画进度条 */
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+        .shimmer-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 20%,
+                rgba(255, 255, 255, 0.6) 60%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="relative h-[100dvh] w-full overflow-hidden selection:bg-pink-500 selection:text-white">
+
+    <!-- 1. 顶部：灵动岛区域 (采用 left-0 right-0 + justify-center 完美避开 transform 冲突) -->
+    <div class="absolute top-[4dvh] left-0 right-0 z-50 flex justify-center px-4">
+        <!-- 灵动岛外壳容器 (移除了 cursor-pointer，在长按触发时会有独特的微缩反馈) -->
+        <div id="island" class="glass-element dynamic-island island-pulse rounded-[30px] w-40 h-10 flex items-center justify-center overflow-hidden transition-all duration-500 select-none">
+            
+            <!-- 状态 A：初始状态（药丸胶囊） -->
+            <div id="island-collapsed" class="flex items-center space-x-2 transition-all duration-300 pointer-events-none">
+                <span id="island-status-dot" class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping"></span>
+                <span id="island-status-text" class="text-[11px] font-bold tracking-wider text-blue-200 uppercase">System Active</span>
+            </div>
+
+            <!-- 状态 B：可调节的环境光参数面板 -->
+            <div id="island-expanded" class="hidden w-full px-5 py-3.5 flex flex-col justify-between h-full opacity-0 transition-opacity duration-500 select-none">
+                <!-- 头部标签 -->
+                <div class="flex items-center justify-between w-full mb-1">
+                    <span class="text-[10px] font-bold tracking-widest text-blue-300 uppercase flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                        AMBIENT TUNER
+                    </span>
+                    <span class="text-[9px] text-slate-500 font-medium">点击岛体折叠</span>
+                </div>
+
+                <!-- 调节项 1：色相 -->
+                <div class="flex items-center space-x-3 w-full my-0.5 slider-control">
+                    <span class="text-[10px] font-semibold text-slate-300 w-8 text-left flex-shrink-0">色彩</span>
+                    <input 
+                        id="hue-slider" 
+                        type="range" 
+                        min="0" 
+                        max="360" 
+                        value="220" 
+                        class="w-full cursor-pointer accent-white"
+                    />
+                </div>
+
+                <!-- 调节项 2：不透明度与半径 -->
+                <div class="flex items-center space-x-3 w-full my-0.5 slider-control">
+                    <span class="text-[10px] font-semibold text-slate-300 w-8 text-left flex-shrink-0">深度</span>
+                    <input 
+                        id="depth-slider" 
+                        type="range" 
+                        min="5" 
+                        max="80" 
+                        value="25" 
+                        class="w-full cursor-pointer accent-white"
+                    />
+                </div>
+            </div>
+
+            <!-- 状态 C：实时搜索 & 交互反馈面板（小说网站专属联动面板） -->
+            <div id="island-search-status" class="hidden w-full px-5 py-3.5 flex flex-col justify-between h-full opacity-0 transition-opacity duration-500 select-none">
+                <div class="flex items-center justify-between w-full">
+                    <span id="search-island-title" class="text-[10px] font-bold tracking-widest text-pink-400 uppercase flex items-center gap-1.5">
+                        <span id="search-island-dot" class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
+                        NOVEL SEARCH
+                    </span>
+                    <span id="search-status-tag" class="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-slate-300">检索中</span>
+                </div>
+
+                <!-- 搜索动态提示信息 -->
+                <div class="my-1 text-left">
+                    <p id="search-progress-title" class="text-xs font-bold text-white tracking-wide truncate">正在跨源检索网络小说数据库...</p>
+                    <p id="search-progress-detail" class="text-[10px] text-slate-400 mt-0.5 truncate">已连接：起点、神魔、八一中文、自建库...</p>
+                </div>
+
+                <!-- 带有流光特效的高级液态加载进度条 -->
+                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden relative shimmer-bar mt-1">
+                    <div id="search-loading-bar" class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-full w-[10%] rounded-full transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <!-- ========================================================================= -->
+            <!-- 📌 开发者留空注释：【下载状态面板】以及【小说阅读/查看面板】预留结构 -->
+            <!-- ========================================================================= -->
+            <!--
+            <div id="island-download-status" class="hidden w-full px-5 py-3.5 flex flex-col justify-between h-full opacity-0 transition-opacity duration-500 select-none">
+                <div class="flex items-center justify-between w-full">
+                    <span class="text-[10px] font-bold tracking-widest text-green-400 uppercase flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                        DOWNLOADING
+                    </span>
+                    <span id="download-percent" class="text-[10px] font-bold text-green-300">45%</span>
+                </div>
+                <div class="my-1 text-left">
+                    <p class="text-xs font-bold text-white truncate">《诡秘之主》全本.epub</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">速度: 4.8 MB/s | 剩余时间: 12秒</p>
+                </div>
+                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mt-1">
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-400 h-full w-[45%] rounded-full"></div>
+                </div>
+            </div>
+            -->
+            <!-- ========================================================================= -->
+
+        </div>
+    </div>
+
+    <!-- 2. 中部：日文大标题（位于顶部灵动岛和中部搜索框的正中间，约 28dvh 位置） -->
+    <div class="absolute top-[28dvh] left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center text-center w-full px-4 select-none">
+        <h1 class="text-4xl sm:text-6xl md:text-8xl font-extrabold tracking-widest bg-clip-text text-transparent bg-gradient-to-b from-white via-slate-100 to-slate-400 drop-shadow-[0_8px_8px_rgba(0,0,0,0.85)]">
+            EPUB
+        </h1>
+        <p class="mt-3.5 text-[11px] sm:text-xs text-slate-400 tracking-[0.25em] uppercase max-w-xs md:max-w-md">
+            epub·打包下载·图书观看
+        </p>
+    </div>
+
+    <!-- 3. 底部：液体玻璃搜索框（完美定位于屏幕绝对中心 50dvh 位置） -->
+    <div class="absolute top-[50dvh] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md px-4 z-40">
+        <div class="glass-element search-glass rounded-[22px] p-1 flex items-center transition-all duration-300">
+            <div class="flex items-center pl-3.5 text-slate-400/80">
+                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <input 
+                id="search-input"
+                type="text" 
+                placeholder="输入小说书名、作者..." 
+                class="w-full bg-transparent border-none outline-none py-2.5 px-3 text-white placeholder-slate-400/60 text-sm md:text-base focus:ring-0"
+            />
+            <button id="search-btn" class="bg-gradient-to-r from-blue-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 active:scale-95 text-white font-semibold text-xs px-5 py-2.5 rounded-[18px] transition-all duration-300 shadow-lg flex-shrink-0">
+                検索
+            </button>
+        </div>
+    </div>
+
+    <!-- 交互与调节逻辑 -->
+    <script>
+        const island = document.getElementById('island');
+        const collapsedContent = document.getElementById('island-collapsed');
+        const expandedContent = document.getElementById('island-expanded');
+        const searchStatusContent = document.getElementById('island-search-status');
+        
+        const hueSlider = document.getElementById('hue-slider');
+        const depthSlider = document.getElementById('depth-slider');
+
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const searchLoadingBar = document.getElementById('search-loading-bar');
+        const searchProgressTitle = document.getElementById('search-progress-title');
+        const searchProgressDetail = document.getElementById('search-progress-detail');
+        const searchStatusTag = document.getElementById('search-status-tag');
+        const islandStatusText = document.getElementById('island-status-text');
+        const islandStatusDot = document.getElementById('island-status-dot');
+        const searchIslandTitle = document.getElementById('search-island-title');
+        const searchIslandDot = document.getElementById('search-island-dot');
+        
+        let isExpanded = false;
+        let isSearching = false; // 是否处于搜索状态锁
+        let searchTimer = null;
+
+        // --- 长按交互核心控制系统 ---
+        let pressTimer = null;
+        const longPressDuration = 500; // 长按触发阀值：500毫秒
+        let hasTriggeredLongPress = false;
+
+        function startPress(e) {
+            if (isExpanded) return; // 已展开时不需要处理长按
+            hasTriggeredLongPress = false;
+            
+            // 手势微缩反馈：按住时岛体微微缩小，提升拟物按压质感
+            island.style.transform = 'scale(0.95)';
+            
+            pressTimer = setTimeout(() => {
+                hasTriggeredLongPress = true;
+                island.style.transform = 'none';
+                toggleIsland(e, true); // 长按触发：优雅展开
+            }, longPressDuration);
+        }
+
+        function cancelPress(e) {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
+            if (!isExpanded) {
+                island.style.transform = 'none'; // 释放微缩反馈
+            }
+        }
+
+        // 注册鼠标与触屏长按事件
+        island.addEventListener('mousedown', startPress);
+        island.addEventListener('touchstart', startPress, { passive: true });
+
+        island.addEventListener('mouseup', cancelPress);
+        island.addEventListener('mouseleave', cancelPress);
+        island.addEventListener('touchend', cancelPress);
+        island.addEventListener('touchmove', cancelPress, { passive: true });
+
+        // 点击事件：折叠专属 (在收拢状态下的单点无效)
+        island.addEventListener('click', (e) => {
+            // 拦截滑块和控制元素
+            if (e.target.closest('.slider-control') || e.target.tagName === 'INPUT') {
+                return;
+            }
+            
+            if (isExpanded) {
+                // 如果已展开，单击直接折叠
+                toggleIsland(e, false);
+            }
+        });
+
+        // 阻止滑块及控制区域事件向外冒泡
+        const stopPropagationTargets = document.querySelectorAll('.slider-control, input[type="range"]');
+        stopPropagationTargets.forEach(element => {
+            ['click', 'mousedown', 'touchstart', 'touchmove'].forEach(evtType => {
+                element.addEventListener(evtType, (e) => {
+                    e.stopPropagation();
+                });
+            });
+        });
+
+        // 1. 色彩 (色相) 滑动监听
+        hueSlider.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--glow-hue', e.target.value);
+        });
+
+        // 2. 深度 (明暗不透明度与大小) 滑动监听
+        depthSlider.addEventListener('input', (e) => {
+            const rawVal = parseInt(e.target.value);
+            const depthVal = rawVal / 100;
+            const sizeVal = 30 + (rawVal * 0.45);
+            
+            document.documentElement.style.setProperty('--glow-depth', depthVal);
+            document.documentElement.style.setProperty('--glow-size', `${sizeVal}%`);
+        });
+
+        // 3. 点击“検索”按钮：触发灵动岛联动搜索状态
+        searchBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const keyword = searchInput.value.trim();
+            // 允许空关键词输入进入搜索，在岛内统一做结果判定与动画反馈
+            triggerNovelSearch(keyword);
+        });
+
+        // 键盘回车键触发搜索
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                searchBtn.click();
+            }
+        });
+
+        // 核心小说搜索触发逻辑
+        function triggerNovelSearch(keyword) {
+            if (isSearching) return; // 避免重复触发
+            isSearching = true;
+
+            // 彻底重置 transform，确保完全居中
+            island.style.transform = 'none';
+
+            // 判断是否是“搜索失败 / 无书源”条件
+            // 条件：空关键词，或者包含 "无" / "没有" 等无书源暗示词
+            const hasNoBookSource = !keyword || keyword.includes("无") || keyword.includes("没有") || keyword.includes("error");
+
+            // 1. 初始化展开时的药丸指示灯状态
+            islandStatusText.innerText = "SEARCHING...";
+            islandStatusText.className = "text-[11px] font-bold tracking-wider text-pink-300 uppercase";
+            islandStatusDot.className = "w-2.5 h-2.5 rounded-full bg-pink-500 animate-ping";
+
+            // 2. 初始化灵动岛内部面板元素
+            searchLoadingBar.style.width = '12%';
+            // 重置颜色类为默认检索中的粉色
+            searchLoadingBar.className = "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-300";
+            searchIslandTitle.className = "text-[10px] font-bold tracking-widest text-pink-400 uppercase flex items-center gap-1.5";
+            searchIslandDot.className = "w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping";
+            
+            searchProgressTitle.innerText = keyword ? `正在搜索: 《${keyword}》` : "正在进行全网空值盲检索...";
+            searchProgressDetail.innerText = "正在跨站搜索最新章节与资源...";
+            searchStatusTag.innerText = "检索中";
+            searchStatusTag.className = "text-[9px] bg-pink-500/20 px-1.5 py-0.5 rounded text-pink-300";
+
+            // 3. 在最顶层展开灵动岛显示进度
+            openIslandToState('search');
+
+            // 4. 模拟动态搜索进度
+            let progress = 12;
+            if (searchTimer) clearInterval(searchTimer);
+            
+            searchTimer = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 6;
+                
+                if (hasNoBookSource) {
+                    // --- 触发失败流程 (无书源) ---
+                    if (progress >= 55) {
+                        clearInterval(searchTimer);
+                        
+                        // 将进度条卡在 55% 并爆红
+                        searchLoadingBar.style.width = '55%';
+                        searchLoadingBar.className = "bg-gradient-to-r from-red-600 to-pink-600 h-full rounded-full transition-all duration-300";
+                        
+                        // 改变面板信息为红色失败警示
+                        searchIslandTitle.className = "text-[10px] font-bold tracking-widest text-red-400 uppercase flex items-center gap-1.5";
+                        searchIslandDot.className = "w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse";
+                        
+                        searchProgressTitle.innerText = keyword ? `《${keyword}》 未能匹配有效源` : "未输入搜索关键词";
+                        searchProgressDetail.innerText = "各大源服务器解析失败，未找到可用书源。";
+                        
+                        searchStatusTag.innerText = "失败";
+                        searchStatusTag.className = "text-[9px] bg-red-500/20 px-1.5 py-0.5 rounded text-red-400";
+                        
+                        // 药丸折叠后的胶囊状态灯提示更新
+                        islandStatusText.innerText = "SEARCH FAILED";
+                        islandStatusText.className = "text-[11px] font-bold tracking-wider text-red-400 uppercase";
+                        islandStatusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
+
+                        // 3.5 秒后折叠，并归位状态
+                        setTimeout(() => {
+                            isSearching = false;
+                            if (isExpanded) {
+                                toggleIsland(null, false);
+                            }
+                            resetIslandToIdle(600);
+                        }, 3500);
+                    } else {
+                        searchLoadingBar.style.width = `${progress}%`;
+                        searchProgressDetail.innerText = "正在跨站解析神魔/八一中文等API...";
+                    }
+                } else {
+                    // --- 触发成功流程 (有书源) ---
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(searchTimer);
+                        
+                        searchLoadingBar.style.width = '100%';
+                        searchProgressDetail.innerText = "检索成功！已为您整合 8 个优质下载源。";
+                        searchStatusTag.innerText = "完成";
+                        searchStatusTag.className = "text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded text-green-300";
+                        
+                        islandStatusText.innerText = "FOUND READY";
+                        islandStatusText.className = "text-[11px] font-bold tracking-wider text-green-300 uppercase";
+                        islandStatusDot.className = "w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse";
+
+                        setTimeout(() => {
+                            isSearching = false;
+                            if (isExpanded) {
+                                toggleIsland(null, false);
+                            }
+                            resetIslandToIdle(600);
+                        }, 3500);
+                    } else {
+                        searchLoadingBar.style.width = `${progress}%`;
+                        if (progress > 30 && progress < 60) {
+                            searchProgressDetail.innerText = "正在解析起点/八一中文网目录树...";
+                        } else if (progress >= 60 && progress < 90) {
+                            searchProgressDetail.innerText = "正在排重章节，构建 Epub 临时通道...";
+                        }
+                    }
+                }
+            }, 300);
+        }
+
+        // 彻底折叠回药丸后，重置状态指示灯
+        function resetIslandToIdle(delay) {
+            setTimeout(() => {
+                islandStatusText.innerText = "System Active";
+                islandStatusText.className = "text-[11px] font-bold tracking-wider text-blue-200 uppercase";
+                islandStatusDot.className = "w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping";
+            }, delay);
+        }
+
+        // 强制展开到指定视图（'search' 搜索态 或 'ambient' 调色盘态）
+        function openIslandToState(state) {
+            isExpanded = true;
+            island.style.transform = 'none'; // 清除缩放
+            
+            // 计算合理宽度
+            const targetWidth = Math.min(350, window.innerWidth - 32);
+            island.style.width = `${targetWidth}px`;
+            island.style.height = '115px'; 
+            island.style.borderRadius = '24px';
+            island.classList.remove('island-pulse');
+
+            collapsedContent.classList.add('hidden');
+            
+            if (state === 'search') {
+                expandedContent.classList.add('hidden');
+                searchStatusContent.classList.remove('hidden');
+                setTimeout(() => {
+                    searchStatusContent.style.opacity = '1';
+                    expandedContent.style.opacity = '0';
+                }, 50);
+            } else {
+                searchStatusContent.classList.add('hidden');
+                expandedContent.classList.remove('hidden');
+                setTimeout(() => {
+                    expandedContent.style.opacity = '1';
+                    searchStatusContent.style.opacity = '0';
+                }, 50);
+            }
+        }
+
+        // 监听视口大小变化，确保灵动岛自适应展开宽度
+        window.addEventListener('resize', () => {
+            if (isExpanded) {
+                const targetWidth = Math.min(350, window.innerWidth - 32);
+                island.style.width = `${targetWidth}px`;
+            }
+        });
+
+        function toggleIsland(event, expand) {
+            if (event) event.stopPropagation();
+            isExpanded = expand;
+            island.style.transform = 'none';
+
+            if (expand) {
+                // 如果正在搜索，优先打开搜索状态面板；否则打开环境光面板
+                openIslandToState(isSearching ? 'search' : 'ambient');
+            } else {
+                // 折叠所有面板，淡出
+                expandedContent.style.opacity = '0';
+                searchStatusContent.style.opacity = '0';
+                
+                setTimeout(() => {
+                    expandedContent.classList.add('hidden');
+                    searchStatusContent.classList.add('hidden');
+                    collapsedContent.classList.remove('hidden');
+                    
+                    // 还原最初药丸尺寸
+                    island.style.width = '160px'; 
+                    island.style.height = '40px';  
+                    island.style.borderRadius = '30px';
+                    
+                    setTimeout(() => {
+                        // 仅在非搜索期间启用呼吸动画，保持系统整洁
+                        if (!isSearching) {
+                            island.classList.add('island-pulse');
+                        }
+                    }, 500);
+                }, 180);
+            }
+        }
+    </script>
+</body>
+</html>
+
+```
